@@ -4,19 +4,35 @@ interface LoadingIndicatorProps {
 
 export default function LoadingIndicator({ message = 'Processing...' }: LoadingIndicatorProps) {
   return (
-    <div className="flex flex-col items-center justify-center space-y-4">
+    <div className="flex flex-col items-center justify-center space-y-6">
       <div className="relative">
-        <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
-        <div className="absolute top-0 left-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-24 h-24 relative">
+          <div className="absolute inset-0 border-4 border-cyan-500/20 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
+          <div className="absolute inset-2 border-4 border-transparent border-t-purple-400 rounded-full animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
+          <div className="absolute inset-4 border-4 border-transparent border-t-pink-400 rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-3 h-3 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/50"></div>
+        </div>
       </div>
-      <div className="text-center">
-        <p className="text-lg font-medium text-white">{message}</p>
-        <p className="text-sm text-gray-400 mt-2">This may take a few moments...</p>
+      <div className="text-center space-y-2">
+        <p className="text-lg font-medium text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 terminal-text">
+          {message}
+        </p>
+        <div className="flex items-center justify-center space-x-1">
+          <span className="text-xs text-gray-500 terminal-text">Processing</span>
+          <div className="loading-dots flex space-x-1">
+            <span className="w-1 h-1 bg-cyan-400 rounded-full"></span>
+            <span className="w-1 h-1 bg-purple-400 rounded-full"></span>
+            <span className="w-1 h-1 bg-pink-400 rounded-full"></span>
+          </div>
+        </div>
       </div>
-      <div className="flex space-x-2">
-        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-        <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-75"></div>
-        <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-150"></div>
+      <div className="w-full max-w-xs">
+        <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+        </div>
       </div>
     </div>
   )
