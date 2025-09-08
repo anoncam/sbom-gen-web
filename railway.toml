@@ -1,0 +1,22 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+healthcheckPath = "/"
+healthcheckTimeout = 30
+numReplicas = 1
+
+[[services]]
+name = "sbom-gen-web"
+icon = "🔍"
+
+[[services.domains]]
+domain = "${RAILWAY_STATIC_URL}"
+
+[environments.production]
+NODE_ENV = "production"
+PORT = "${PORT}"
