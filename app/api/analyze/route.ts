@@ -103,14 +103,23 @@ export async function POST(request: NextRequest) {
       )
       
       const grypeResults = JSON.parse(await readFile(grypeOutput, 'utf-8'))
+      const grypeMatches = grypeResults.matches || []
+      
       vulnerabilities.grype = {
-        vulnerabilities: grypeResults.matches || [],
+        vulnerabilities: grypeMatches.map((match: any) => ({
+          id: match.vulnerability?.id || 'Unknown',
+          cve: match.vulnerability?.dataSource || null,
+          severity: match.vulnerability?.severity || 'Unknown',
+          package: match.artifact?.name || 'Unknown',
+          version: match.artifact?.version || 'Unknown',
+          fixedVersion: match.vulnerability?.fix?.versions?.[0] || null,
+        })),
         summary: {
-          critical: grypeResults.matches?.filter((m: any) => m.vulnerability.severity === 'Critical').length || 0,
-          high: grypeResults.matches?.filter((m: any) => m.vulnerability.severity === 'High').length || 0,
-          medium: grypeResults.matches?.filter((m: any) => m.vulnerability.severity === 'Medium').length || 0,
-          low: grypeResults.matches?.filter((m: any) => m.vulnerability.severity === 'Low').length || 0,
-          unknown: grypeResults.matches?.filter((m: any) => m.vulnerability.severity === 'Unknown').length || 0,
+          critical: grypeMatches.filter((m: any) => m.vulnerability?.severity === 'Critical').length,
+          high: grypeMatches.filter((m: any) => m.vulnerability?.severity === 'High').length,
+          medium: grypeMatches.filter((m: any) => m.vulnerability?.severity === 'Medium').length,
+          low: grypeMatches.filter((m: any) => m.vulnerability?.severity === 'Low').length,
+          unknown: grypeMatches.filter((m: any) => !m.vulnerability?.severity || m.vulnerability?.severity === 'Unknown').length,
         }
       }
     } catch (error) {
@@ -136,10 +145,23 @@ export async function POST(request: NextRequest) {
       )
       
       const osvResults = JSON.parse(await readFile(osvOutput, 'utf-8'))
+      const osvPackages = osvResults.results?.[0]?.packages || []
+      
       vulnerabilities.osv = {
-        vulnerabilities: osvResults.results?.[0]?.packages || [],
+        vulnerabilities: osvPackages.map((pkg: any) => ({
+          id: pkg.vulnerabilities?.[0]?.id || 'Unknown',
+          severity: pkg.vulnerabilities?.[0]?.database_specific?.severity || 'Unknown',
+          package: pkg.package?.name || 'Unknown',
+          version: pkg.package?.version || 'Unknown',
+          ecosystem: pkg.package?.ecosystem || 'Unknown',
+        })),
         summary: {
-          total: osvResults.results?.[0]?.packages?.length || 0
+          total: osvPackages.length,
+          critical: 0,
+          high: 0,
+          medium: 0,
+          low: 0,
+          unknown: osvPackages.length
         }
       }
     } catch (error) {
