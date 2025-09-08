@@ -37,9 +37,11 @@ RUN npm ci --only=production
 
 # Copy built application from builder stage
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/middleware.ts ./
+
+# Copy public directory if it exists
+COPY --from=builder /app/public* ./public/
 
 # Create temp directory for analysis
 RUN mkdir -p /app/temp
